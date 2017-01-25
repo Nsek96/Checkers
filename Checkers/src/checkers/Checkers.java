@@ -30,30 +30,30 @@ public class Checkers extends Application {
         Label label=new Label("V 0.1");
         label.setLayoutX(50);
         label.setLayoutY(550);
-        root.getChildren().addAll(img,label);
+        //root.getChildren().addAll(img,label);
 
         MenuItem newGame = new MenuItem("НОВАЯ ИГРА");
         MenuItem exitGame = new MenuItem("Выйти из игры");
         SubMenu mainMenu = new SubMenu(
                 newGame, exitGame
         );
-        MenuItem NG1 = new MenuItem("ИГРОК VS ИГРОК");
-        MenuItem NG2 = new MenuItem("ИГРОК VS КОМПЬЮТЕР");
+        MenuItem NG1 = new MenuItem("2 ИГРОКА");
+        //MenuItem NG2 = new MenuItem("ИГРОК VS КОМПЬЮТЕР");
         MenuItem NG3 = new MenuItem("НАЗАД");
         SubMenu newGameMenu = new SubMenu(
-                NG1, NG2, NG3
+                NG1, /*NG2,*/ NG3
         );
         MenuBox menuBox = new MenuBox(mainMenu);
 
         newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
         exitGame.setOnMouseClicked(event -> System.exit(0));
         NG3.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
-        root.getChildren().addAll(menuBox);
+        root.getChildren().addAll(img,menuBox,label);
         Scene scene = new Scene(root, 900, 600);
-        FadeTransition ft = new FadeTransition(Duration.seconds(1), menuBox);
+       /* FadeTransition ft = new FadeTransition(Duration.seconds(1), menuBox);
         ft.setFromValue(0);
         ft.setToValue(1);
-        ft.play();
+        ft.play();*/
         menuBox.setVisible(true);
         primaryStage.setTitle("Checkers");
         primaryStage.setScene(scene);
@@ -96,9 +96,9 @@ public class Checkers extends Application {
             MenuBox.subMenu = subMenu;
 
             setVisible(false);
-            Rectangle bg = new Rectangle(900, 600, Color.LIGHTBLUE);
-            bg.setOpacity(0.4);
-            getChildren().addAll(bg, subMenu);
+           // Rectangle bg = new Rectangle(900, 600, Color.LIGHTBLUE);
+           // bg.setOpacity(0.4);
+            getChildren().addAll(/*bg,*/ subMenu);
         }
 
         public void setSubMenu(SubMenu subMenu) {
