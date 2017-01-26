@@ -29,7 +29,7 @@ public class CheckersWidow extends Application {
         board.message.setLayoutX(200);
         board.message.setLayoutY(500);
         scene = new Scene(root, 900, 600);
-        root.getChildren().addAll(board.newgamebtn, board.resignbtn,board.message);
+        root.getChildren().addAll(board.newgamebtn, board.resignbtn, board.message);
         primaryStage.setTitle("Checkers");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -47,7 +47,6 @@ public class CheckersWidow extends Application {
         Button resignbtn = new Button("Сдаться");
         Label message = new Label();
         CheckersData board;
-
         boolean gameInProgress;
         int currentPlayer;
         int selectedRow, selectedCol;
@@ -57,13 +56,14 @@ public class CheckersWidow extends Application {
             board = new CheckersData();
             canvas = new Canvas(600, 400);
             GraphicsContext gc = canvas.getGraphicsContext2D();
+            doNewGame();
             paint(gc);
             update(gc);
             canvas.setOnMousePressed(this);
             newgamebtn.setOnMouseClicked(this);
             resignbtn.setOnMouseClicked(this);
             root.getChildren().add(canvas);
-            doNewGame();
+
 
         }
         private static Canvas canvas;
@@ -218,43 +218,43 @@ public class CheckersWidow extends Application {
                     } else {
                         g.setFill(Color.GRAY);
                     }
-                    g.fillRect(2 + col * 50, 2 + row * 50, 50, 50);
+                    g.fillRect(2 + col*20, 2 + row*20, 20, 20);
                     switch (board.pieceAt(row, col)) {
                         case CheckersData.RED:
                             g.setFill(Color.RED);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.fillOval(4 + col*20, 4 + row*20, 16, 16);
                             break;
                         case CheckersData.BLACK:
                             g.setFill(Color.BLACK);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.fillOval(4 + col*20, 4 + row*20, 16, 16);
                             break;
-                        case CheckersData.RED_KING:
-                            g.setFill(Color.RED);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
-                            g.setFill(Color.WHITE);
-                            g.drawImage(image, 7 + col * 20, 16 + row * 20);
-                            break;
-                        case CheckersData.BLACK_KING:
-                            g.setFill(Color.BLACK);
-                            g.fillOval(4 + col * 20, 4 + row * 20, 16, 16);
-                            g.setFill(Color.WHITE);
-                            g.drawImage(image, 7 + col * 20, 16 + row * 20);
-                            break;
+                        /* case CheckersData.RED_KING:
+                         g.setFill(Color.RED);
+                         g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                         g.setFill(Color.WHITE);
+                         g.drawImage(image, 7 + col * 20, 16 + row * 20);
+                         break;*/
+                        /*case CheckersData.BLACK_KING:
+                         g.setFill(Color.BLACK);
+                         g.fillOval(4 + col * 20, 4 + row * 20, 16, 16);
+                         g.setFill(Color.WHITE);
+                         g.drawImage(image, 7 + col * 20, 16 + row * 20);
+                         break;*/
                     }
                 }
             }
 
             /* Если игра продолжается, HILITE правовые шаги. Обратите внимание, что legalMoves
-          никогда не нуль в то время как игра продолжается. */
+                       никогда не нуль в то время как игра продолжается. */
             if (gameInProgress) {
                 // Во-первых, нарисуйте голубую рамку вокруг частей, которые могут быть перемещены.
-                g.setFill(Color.BLUE);
+              /*  g.setFill(Color.CYAN);
                 for (int i = 0; i < legalMoves.length; i++) {
-                    g.fillRect(2 + legalMoves[i].fromCol * 20, 2 + legalMoves[i].fromRow * 20, 19, 19);
-                }
+                    g.fillRect(2 + legalMoves[i].fromCol*20, 2 + legalMoves[i].fromRow*20, 19, 19);
+                }*/
                 /* Если выбран кусок для перемещения (т.е. если selectedRow> = 0), то
-              нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
-              вокруг eacj площади, что эта часть может быть перемещен.*/
+                               нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
+                               вокруг eacj площади, что эта часть может быть перемещен.*/
                 if (selectedRow >= 0) {
                     g.setFill(Color.WHITE);
                     g.fillRect(2 + selectedCol * 20, 2 + selectedRow * 20, 19, 19);
@@ -281,7 +281,6 @@ public class CheckersWidow extends Application {
                 RED_KING = 2,
                 BLACK = 3,
                 BLACK_KING = 4;
-
         private int[][] board;
 
         public CheckersData() {

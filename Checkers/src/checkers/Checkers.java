@@ -2,11 +2,13 @@ package checkers;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -34,20 +36,41 @@ public class Checkers extends Application {
 
         MenuItem newGame = new MenuItem("НОВАЯ ИГРА");
         MenuItem exitGame = new MenuItem("Выйти из игры");
-        SubMenu mainMenu = new SubMenu(
+        final SubMenu mainMenu = new SubMenu(
                 newGame, exitGame
         );
-        MenuItem NG1 = new MenuItem("2 ИГРОКА");
-        //MenuItem NG2 = new MenuItem("ИГРОК VS КОМПЬЮТЕР");
-        MenuItem NG3 = new MenuItem("НАЗАД");
-        SubMenu newGameMenu = new SubMenu(
-                NG1, /*NG2,*/ NG3
+        MenuItem playersitem = new MenuItem("2 ИГРОКА");
+        //MenuItem botsitem = new MenuItem("ИГРОК VS КОМПЬЮТЕР");
+        MenuItem backitem = new MenuItem("НАЗАД");
+        final SubMenu newGameMenu = new SubMenu(
+                playersitem, /*botsitem,*/ backitem
         );
-        MenuBox menuBox = new MenuBox(mainMenu);
+        final MenuBox menuBox = new MenuBox(mainMenu);
+        newGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
-        newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
-        exitGame.setOnMouseClicked(event -> System.exit(0));
-        NG3.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
+            @Override
+            public void handle(MouseEvent t) {
+            menuBox.setSubMenu(newGameMenu);
+            }
+        });
+
+      //  newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
+        exitGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent t) {
+           System.exit(0);
+            }
+        });
+       // exitGame.setOnMouseClicked(event -> System.exit(0));
+        backitem.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent t) {
+          menuBox.setSubMenu(mainMenu);
+            }
+        });
+        //backitem.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
         root.getChildren().addAll(img,menuBox,label);
         Scene scene = new Scene(root, 900, 600);
        /* FadeTransition ft = new FadeTransition(Duration.seconds(1), menuBox);
@@ -64,7 +87,7 @@ public class Checkers extends Application {
     private static class MenuItem extends StackPane {
 
         public MenuItem(String name) {
-            Rectangle bg = new Rectangle(200, 20, Color.WHITE);
+            final Rectangle bg = new Rectangle(200, 20, Color.WHITE);
             bg.setOpacity(0.5);
 
             Text text = new Text(name);
@@ -73,18 +96,38 @@ public class Checkers extends Application {
 
             setAlignment(Pos.CENTER);
             getChildren().addAll(bg, text);
-            FillTransition st = new FillTransition(Duration.seconds(0.5), bg);
-            setOnMouseEntered(event -> {
+            final FillTransition st = new FillTransition(Duration.seconds(0.5), bg);
+            setOnMouseEntered(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent t) {
                 st.setFromValue(Color.DARKGRAY);
                 st.setToValue(Color.DARKGOLDENROD);
                 st.setCycleCount(Animation.INDEFINITE);
                 st.setAutoReverse(true);
                 st.play();
+                }
             });
-            setOnMouseExited(event -> {
+            
+            /*setOnMouseEntered(event -> {
+                st.setFromValue(Color.DARKGRAY);
+                st.setToValue(Color.DARKGOLDENROD);
+                st.setCycleCount(Animation.INDEFINITE);
+                st.setAutoReverse(true);
+                st.play();
+            });*/
+            setOnMouseExited(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent t) {
+                 st.stop();
+                bg.setFill(Color.WHITE); 
+                }
+            });
+            /*setOnMouseExited(event -> {
                 st.stop();
                 bg.setFill(Color.WHITE);
-            });
+            });*/
         }
     }
 
