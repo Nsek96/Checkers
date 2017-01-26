@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ public class CheckersWidow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //extends StackPane
         root = new Pane();
         CheckersCanvas board = new CheckersCanvas();
         image = new Image(getClass().getResourceAsStream("king.jpg"));
@@ -29,10 +31,12 @@ public class CheckersWidow extends Application {
         board.message.setLayoutX(200);
         board.message.setLayoutY(500);
         scene = new Scene(root, 900, 600);
+        
         root.getChildren().addAll(board.newgamebtn, board.resignbtn, board.message);
         primaryStage.setTitle("Checkers");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
     }
     private static Pane root;
     private static Image image;
@@ -53,13 +57,14 @@ public class CheckersWidow extends Application {
         CheckersMove[] legalMoves;
 
         public CheckersCanvas() {
-            board = new CheckersData();
-            canvas = new Canvas(600, 400);
-            GraphicsContext gc = canvas.getGraphicsContext2D();
+            board = new CheckersData();  
             doNewGame();
+            canvas = new Canvas(600, 400);
+            GraphicsContext gc = canvas.getGraphicsContext2D();          
             paint(gc);
             update(gc);
-            canvas.setOnMousePressed(this);
+            
+            canvas.setOnMousePressed(this);            
             newgamebtn.setOnMouseClicked(this);
             resignbtn.setOnMouseClicked(this);
             root.getChildren().add(canvas);
@@ -113,8 +118,8 @@ public class CheckersWidow extends Application {
             } else if (gameInProgress == false) {
                 message.setText("Click \"New Game\" to start a new game.");
             } else {
-                int col = (int) ((event.getX() - 2) / 20);
-                int row = (int) ((event.getY() - 2) / 20);
+                int col = (int) ((event.getSceneX() - 2) / 20);
+                int row = (int) ((event.getSceneY() - 2) / 20);
                 if (col >= 0 && col < 8 && row >= 0 && row < 8) {
                     doClickSquare(row, col);
                 }
@@ -131,7 +136,14 @@ public class CheckersWidow extends Application {
                     } else {
                         message.setText("BLACK:  Make your move.");
                     }
-                    // repaint();
+                   canvas.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                           /* setOnMouseDragged(e -> {            
+            relocate(e.getSceneX() - mouseX + oldX, e.getSceneY() - mouseY + oldY);
+        });*/
+                        }
+                    });
                     return;
                 }
             }
@@ -227,6 +239,7 @@ public class CheckersWidow extends Application {
                         case CheckersData.BLACK:
                             g.setFill(Color.BLACK);
                             g.fillOval(4 + col*20, 4 + row*20, 16, 16);
+                            g.drawImage(image, 7 + col * 20, 16 + row * 20);
                             break;
                         /* case CheckersData.RED_KING:
                          g.setFill(Color.RED);
@@ -245,16 +258,16 @@ public class CheckersWidow extends Application {
             }
 
             /* Если игра продолжается, HILITE правовые шаги. Обратите внимание, что legalMoves
-                       никогда не нуль в то время как игра продолжается. */
+                       никогда не нуль в то время как игра продолжается. */
             if (gameInProgress) {
                 // Во-первых, нарисуйте голубую рамку вокруг частей, которые могут быть перемещены.
-              /*  g.setFill(Color.CYAN);
+                g.setStroke(Color.CYAN);
                 for (int i = 0; i < legalMoves.length; i++) {
-                    g.fillRect(2 + legalMoves[i].fromCol*20, 2 + legalMoves[i].fromRow*20, 19, 19);
-                }*/
+                    g.strokeRoundRect(2 + legalMoves[i].fromCol*20, 2 + legalMoves[i].fromRow*20, 19, 19,0,0);
+                }
                 /* Если выбран кусок для перемещения (т.е. если selectedRow> = 0), то
-                               нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
-                               вокруг eacj площади, что эта часть может быть перемещен.*/
+                               нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
+                               вокруг eacj площади, что эта часть может быть перемещен.*/
                 if (selectedRow >= 0) {
                     g.setFill(Color.WHITE);
                     g.fillRect(2 + selectedCol * 20, 2 + selectedRow * 20, 19, 19);
