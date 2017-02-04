@@ -1,21 +1,18 @@
 package checkers;
 
 import java.util.Vector;
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class CheckersWidow extends Application {
 
@@ -25,7 +22,7 @@ public class CheckersWidow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //extends StackPane
+
         root = new Pane();
         CheckersCanvas board = new CheckersCanvas();
         image = new Image(getClass().getResourceAsStream("king.jpg"));
@@ -47,146 +44,107 @@ public class CheckersWidow extends Application {
         launch(args);
     }
 
-    private static class CheckersCanvas {
+    private static class CheckersCanvas implements EventHandler<MouseEvent> {
 
         Button newgamebtn = new Button("Новая игра");
         Button resignbtn = new Button("Сдаться");
         Label message = new Label();
         static CheckersData board;
+        private static Canvas canvas;
         static boolean gameInProgress;
         int currentPlayer;
         int col, row;
-        int selectedRow, selectedCol;
-        CheckersMove[] legalMoves;
+        private static GraphicsContext gc;
+        static int selectedRow, selectedCol;
+        static CheckersMove[] legalMoves;
 
         public CheckersCanvas() {
-
             board = new CheckersData();
             doNewGame();
-            Draw draw = new Draw();
-            /* Rectangle rect = new Rectangle(100, 40, 100, 100);
-             rect.setArcHeight(50);
-             rect.setArcWidth(50);
-             rect.setFill(Color.VIOLET);
-
-             TranslateTransition tt = new TranslateTransition(Duration.millis(2000), rect);
-             tt.setByX(200f);
-             tt.setByY(100);
-             tt.setCycleCount((int) 4f);
-             // tt.setAutoReverse(true);
-
-             tt.play();*/
-
-
-            newgamebtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent t) {
-                    doNewGame();
-                }
-            });
-            resignbtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent t) {
-                    doResign();
-                }
-            });
-
+            canvas = new Canvas(600, 800);
+            gc = canvas.getGraphicsContext2D();
+            paint(gc);
+            canvas.setOnMousePressed(this);
+            root.getChildren().add(canvas);
         }
 
-        /*   @Override
-         public void handle(MouseEvent event) {
-         Object src = event.getSource();
-         if (src == newgamebtn) {
-         doNewGame();
-         } else if (src == resignbtn) {
-         doResign();
-         } else {
-         System.out.println(src);
-         col = (int) ((event.getSceneX() - 2) / 20);
-         row = (int) ((event.getSceneY() - 2) / 20);
-         if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-         //  System.out.println(row + "\n"+col);
-         doClickSquare(row, col);
-         }
-         }
-         }*/
-        private static class Draw {
+        @Override
+        public void handle(MouseEvent t) {
+            if (gameInProgress == false) {
+                message.setText("Click \"New Game\" to start a new game.");
+            } else {
+                int col = (int) ((t.getX() - 2) / 50);
+                int row = (int) ((t.getY() - 2) / 50);
+                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+                    doClickSquare(row, col);
+                }
+            }
+        }
 
-            Rectangle rectangle;
-            Rectangle blackrectangle;
-            Ellipse redellipse;
-            Ellipse blackellipse;
+        private void paint(GraphicsContext g) {
+            /* Нарисуйте рисунок шахматной доски в сером и LightGray. Нарисуйте
+          шашки. Если игра продолжается, HILITE правовые шаги.
+        Draw черную границу двух пикселов по краям холста. */
 
-            public Draw() {
-
-                //  g.setFill(Color.BLACK);            
-                // g.fillRect(0, 0, canvas.getWidth() - 1, canvas.getHeight() - 1);
-                // g.fillRect(1, 1, canvas.getWidth() - 3, canvas.getHeight() - 3);            
-            /* Нарисуйте квадраты шахматной доски и шашек. */
-                for (int row = 0; row < 8; row++) {
-                    for (int col = 0; col < 8; col++) {
-                        if (row % 2 == col % 2) {
-                            rectangle = new Rectangle(2 + col * 20, 2 + row * 20, 20, 20);
-                            rectangle.setFill(Color.GRAY);
-                            root.getChildren().add(rectangle);
-                        } else {
-                            blackrectangle = new Rectangle(2 + col * 20, 2 + row * 20, 20, 20);
-                            blackrectangle.setFill(Color.LIGHTGRAY);
-                            root.getChildren().add(blackrectangle);
-                        }
-
-                        switch (board.pieceAt(row, col)) {
-                            case CheckersData.RED:
-                                redellipse = new Ellipse(12 + col * 20, 12 + row * 20, 10, 10);
-                                redellipse.setFill(Color.RED);
-                                root.getChildren().add(redellipse);
-                                break;
-                            case CheckersData.BLACK:
-                                blackellipse = new Ellipse(12 + col * 20, 12 + row * 20, 10, 10);
-                                blackellipse.setFill(Color.BLACK);
-                                root.getChildren().add(blackellipse);
-                                //g.fillOval(4 + col * 20, 4 + row * 20, 16, 16);
-                                break;
-                            /* case CheckersData.RED_KING:
-                             g.setFill(Color.RED);
-                             g.fillOval(4 + col * 20, 4 + row * 20, 16, 16);
-                             g.setFill(Color.WHITE);
-                             //g.drawString("K", 7 + col * 20, 16 + row * 20);
-                             break;
-                             case CheckersData.BLACK_KING:
-                             g.setFill(Color.BLACK);
-                             g.fillOval(4 + col * 20, 4 + row * 20, 16, 16);
-                             g.setFill(Color.WHITE);
-                             // g.drawString("K", 7 + col * 20, 16 + row * 20);
-                             break;*/
-                        }
-
+ /* Нарисуйте квадраты шахматной доски и шашек. */
+            for (int row = 0; row < 8; row++) {
+                for (int col = 0; col < 8; col++) {
+                    if (row % 2 == col % 2) {
+                        g.setFill(Color.LIGHTGRAY);
+                    } else {
+                        g.setFill(Color.GRAY);
+                    }
+                    g.fillRect(2 + col * 50, 2 + row * 50, 50, 50);
+                    switch (board.pieceAt(row, col)) {
+                        case CheckersData.RED:
+                            g.setFill(Color.RED);
+                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            break;
+                        case CheckersData.BLACK:
+                            g.setFill(Color.BLACK);
+                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            break;
+                        case CheckersData.RED_KING:
+                            g.setFill(Color.RED);
+                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.setFill(Color.WHITE);
+                            //g.drawImage(image, 7 + col * 50, 16 + row * 50);
+                            g.strokeText("K", 7 + col * 50, 16 + row * 50);
+                            break;
+                        case CheckersData.BLACK_KING:
+                            g.setFill(Color.BLACK);
+                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.setFill(Color.WHITE);
+                            g.strokeText("K", 7 + col * 50, 16 + row * 50);
+                            break;
                     }
                 }
+            }
 
-                /* Если игра продолжается, HILITE правовые шаги. Обратите внимание, что legalMoves
-                 никогда не нуль в то время как игра продолжается. */
-                /* if (gameInProgress) {
-                 // Во-первых, нарисуйте голубую рамку вокруг частей, которые могут быть перемещены.
-                 g.setFill(Color.CYAN);
-                 for (int i = 0; i < legalMoves.length; i++) {
-                 g.strokeRect(2 + legalMoves[i].fromCol * 20, 2 + legalMoves[i].fromRow * 20, 19, 19);
-                 }
-                 /* Если выбран кусок для перемещения (т.е. если selectedRow> = 0), то
-                               нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
-                               вокруг eacj площади, что эта часть может быть перемещен.*/
-                /*     if (selectedRow >= 0) {
-                 g.setFill(Color.WHITE);
-                 g.strokeRect(2 + selectedCol * 20, 2 + selectedRow * 20, 19, 19);
-                 g.strokeRect(3 + selectedCol * 20, 3 + selectedRow * 20, 17, 17);
-                 g.setFill(Color.GREEN);
-                 for (int i = 0; i < legalMoves.length; i++) {
-                 if (legalMoves[i].fromCol == selectedCol && legalMoves[i].fromRow == selectedRow) {
-                 g.strokeRect(2 + legalMoves[i].toCol * 20, 2 + legalMoves[i].toRow * 20, 19, 19);
-                 }
-                 }
-                 }
-                 }*/
+            /* Если игра продолжается, HILITE правовые шаги. Обратите внимание, что legalMoves
+          никогда не нуль в то время как игра продолжается. */
+            if (gameInProgress) {
+                // Во-первых, нарисуйте голубую рамку вокруг частей, которые могут быть перемещены.
+                g.setStroke(Color.CYAN);
+                for (int i = 0; i < legalMoves.length; i++) {
+                    g.strokeRect(2 + legalMoves[i].fromCol * 50, 2 + legalMoves[i].fromRow * 50, 49, 49);
+                    g.setFill(Color.RED);
+                }
+                /* Если выбран кусок для перемещения (т.е. если selectedRow> = 0), то
+              нарисовать белую рамку 2-х пикселей вокруг этой части и рисовать зеленые границы
+              вокруг eacj площади, что эта часть может быть перемещен.*/
+                if (selectedRow >= 0) {
+                    g.setStroke(Color.WHITE);
+                    g.strokeRect(2 + selectedCol * 50, 2 + selectedRow * 50, 50, 50);
+                    g.strokeRect(3 + selectedCol * 50, 3 + selectedRow * 50, 47, 47);
+                    g.setStroke(Color.INDIGO);
+                    for (int i = 0; i < legalMoves.length; i++) {
+                        if (legalMoves[i].fromCol == selectedCol && legalMoves[i].fromRow == selectedRow) {
+                            g.strokeOval(2 + legalMoves[i].toCol * 50, 2 + legalMoves[i].toRow * 50, 49, 49);
+
+                        }
+                    }
+                }
             }
         }
 
@@ -203,7 +161,7 @@ public class CheckersWidow extends Application {
             gameInProgress = true;
             newgamebtn.setDisable(true);
             resignbtn.setDisable(false);
-            //repaint();
+            // repaintContext(gc);
         }
 
         private void doResign() {
@@ -235,7 +193,7 @@ public class CheckersWidow extends Application {
                     } else {
                         message.setText("BLACK:  Make your move.");
                     }
-
+                    repaintContext(gc);
                     return;
                 }
             }
@@ -266,7 +224,7 @@ public class CheckersWidow extends Application {
                     }
                     selectedRow = move.toRow;  // Since only one piece can be moved, select it.
                     selectedCol = move.toCol;
-                    // repaint();
+                    repaintContext(gc);
                     return;
                 }
             }
@@ -307,11 +265,15 @@ public class CheckersWidow extends Application {
                     selectedCol = legalMoves[0].fromCol;
                 }
             }
+            repaintContext(gc);
 
-            /* redCircle.setLayoutX(row);
-             redCircle.setLayoutY(col);*/
-            //  repaint();
         }
+
+        private void repaintContext(GraphicsContext g) {
+            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            paint(g);
+        }
+
     }
 
     private static class CheckersData {

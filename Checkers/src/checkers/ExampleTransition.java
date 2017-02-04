@@ -5,6 +5,8 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -16,14 +18,13 @@ import javafx.util.Duration;
 public class ExampleTransition extends Application {
 
     private Ellipse ellipse;
-     public Object src;
+    public Object src;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Pane root = new Pane();
         Rectangle rectangle = new Rectangle(500, 300, 100, 100);
         rectangle.setFill(Color.GRAY);
-        // rectangle.setOnMousePressed(this); 
         for (int i = 1; i < 8; i++) {
             ellipse = new Ellipse(20 + 20 * i, 50, 10, 10);
             ellipse.setFill(Color.BLUE);
@@ -32,7 +33,6 @@ public class ExampleTransition extends Application {
                 public void handle(MouseEvent event) {
                     src = event.getSource();
                 }
-               
             });
             root.getChildren().addAll(ellipse);
         }
@@ -55,17 +55,4 @@ public class ExampleTransition extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
-    /* @Override
-    public void handle(MouseEvent t) {
-
-        if (t.getSource().equals(ellipse)) {
-            System.out.println(t.getSource());
-        } else {
-            TranslateTransition tt = new TranslateTransition(Duration.millis(2000), ellipse);            
-            tt.setToX(t.getSceneX());
-            tt.setToY(t.getSceneY());
-            tt.play();
-        }
-    }*/
 }
