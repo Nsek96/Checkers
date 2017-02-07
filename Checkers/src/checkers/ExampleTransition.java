@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,19 +24,32 @@ public class ExampleTransition extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Pane root = new Pane();
+        Image black = new Image(getClass().getResourceAsStream("black.png"));
         Rectangle rectangle = new Rectangle(500, 300, 100, 100);
         rectangle.setFill(Color.GRAY);
+        Canvas canvas = new Canvas(200,200);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        
         for (int i = 1; i < 8; i++) {
-            ellipse = new Ellipse(20 + 20 * i, 50, 10, 10);
-            ellipse.setFill(Color.BLUE);
-            ellipse.setOnMousePressed(new EventHandler<MouseEvent>() {
+            gc.drawImage(black, 20 + 20 * i, 50, 20, 20);
+            // ellipse = new Ellipse(20 + 20 * i, 50, 10, 10);
+            //ellipse.setFill(Color.BLUE);
+            canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    src = event.getSource();
+                   gc.moveTo(event.getX(), event.getY());
                 }
-            });
-            root.getChildren().addAll(ellipse);
+            }
+            );
+            //ellipse.setOnMousePressed(new EventHandler<MouseEvent>() {
+            //  @Override
+            // public void handle(MouseEvent event) {
+            //    src = event.getSource();
+            // }
+            //});
+
         }
+        root.getChildren().addAll(canvas);
         rectangle.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
