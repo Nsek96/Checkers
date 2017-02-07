@@ -18,14 +18,24 @@ public class CheckersWidow extends Application {
 
     private static Scene scene;
     private static Pane root;
-    private static Image image;
+    private static Image whiteking;
+    private static Image blackking;
+    private static Image white;
+    private static Image black;
+    private static Image blackboard;
+    private static Image whiteboard;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         root = new Pane();
+        whiteking = new Image(getClass().getResourceAsStream("whiteking.png"));
+        blackking = new Image(getClass().getResourceAsStream("blackking.png"));
+        white = new Image(getClass().getResourceAsStream("white.png"));
+        black = new Image(getClass().getResourceAsStream("black.png"));
+        blackboard = new Image(getClass().getResourceAsStream("blackboard.png"));
+        whiteboard = new Image(getClass().getResourceAsStream("whiteboard.png"));
         CheckersCanvas board = new CheckersCanvas();
-        image = new Image(getClass().getResourceAsStream("king.jpg"));
         board.newgamebtn.setLayoutX(750);
         board.newgamebtn.setLayoutY(200);
         board.resignbtn.setLayoutX(750);
@@ -90,32 +100,26 @@ public class CheckersWidow extends Application {
             for (int row = 0; row < 8; row++) {
                 for (int col = 0; col < 8; col++) {
                     if (row % 2 == col % 2) {
-                        g.setFill(Color.LIGHTGRAY);
+                        g.drawImage(whiteboard, 2 + col * 50, 2 + row * 50, 50, 50);
+                        //g.setFill(Color.web("#8B4513"));
                     } else {
-                        g.setFill(Color.GRAY);
+                        g.drawImage(blackboard, 2 + col * 50, 2 + row * 50, 50, 50);
+                       // g.setFill(Color.web("#FFA07A"));
                     }
-                    g.fillRect(2 + col * 50, 2 + row * 50, 50, 50);
+                   // g.fillRect(2 + col * 50, 2 + row * 50, 50, 50);
                     switch (board.pieceAt(row, col)) {
                         case CheckersData.RED:
-                            g.setFill(Color.RED);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.drawImage(white, 4 + col * 50, 4 + row * 50, 46, 46);
                             break;
                         case CheckersData.BLACK:
-                            g.setFill(Color.BLACK);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
+                            g.drawImage(black, 4 + col * 50, 4 + row * 50, 46, 46);
                             break;
                         case CheckersData.RED_KING:
-                            g.setFill(Color.RED);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
-                            g.setFill(Color.WHITE);
-                            //g.drawImage(image, 7 + col * 50, 16 + row * 50);
-                            g.strokeText("K", 7 + col * 50, 16 + row * 50);
+                            g.drawImage(whiteking, 4 + col * 50, 4 + row * 50, 46, 46);
+                            //  g.drawImage(whiteking, 4 + col * 50, 4 + row * 50, 40, 40);
                             break;
                         case CheckersData.BLACK_KING:
-                            g.setFill(Color.BLACK);
-                            g.fillOval(4 + col * 50, 4 + row * 50, 46, 46);
-                            g.setFill(Color.WHITE);
-                            g.strokeText("K", 7 + col * 50, 16 + row * 50);
+                            g.drawImage(blackking, 4 + col * 50, 4 + row * 50, 46, 46);
                             break;
                     }
                 }
@@ -137,7 +141,7 @@ public class CheckersWidow extends Application {
                     g.setStroke(Color.WHITE);
                     g.strokeRect(2 + selectedCol * 50, 2 + selectedRow * 50, 50, 50);
                     g.strokeRect(3 + selectedCol * 50, 3 + selectedRow * 50, 47, 47);
-                    g.setStroke(Color.INDIGO);
+                    g.setStroke(Color.web("#DAA520"));
                     for (int i = 0; i < legalMoves.length; i++) {
                         if (legalMoves[i].fromCol == selectedCol && legalMoves[i].fromRow == selectedRow) {
                             g.strokeOval(2 + legalMoves[i].toCol * 50, 2 + legalMoves[i].toRow * 50, 49, 49);
