@@ -25,6 +25,7 @@ public class ExampleTransition extends Application {
     public void start(Stage primaryStage) throws Exception {
         Pane root = new Pane();
         Image black = new Image(getClass().getResourceAsStream("black.png"));
+        //SpriteAnimation
         Rectangle rectangle = new Rectangle(500, 300, 100, 100);
         rectangle.setFill(Color.GRAY);
         Canvas canvas = new Canvas(200,200);
@@ -34,10 +35,12 @@ public class ExampleTransition extends Application {
             gc.drawImage(black, 20 + 20 * i, 50, 20, 20);
             // ellipse = new Ellipse(20 + 20 * i, 50, 10, 10);
             //ellipse.setFill(Color.BLUE);
+           
             canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                    gc.moveTo(event.getX(), event.getY());
+                   
                 }
             }
             );

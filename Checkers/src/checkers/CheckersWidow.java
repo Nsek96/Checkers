@@ -24,6 +24,7 @@ public class CheckersWidow extends Application {
     private static Image black;
     private static Image blackboard;
     private static Image whiteboard;
+    private static Image border;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -35,13 +36,15 @@ public class CheckersWidow extends Application {
         black = new Image(getClass().getResourceAsStream("black.png"));
         blackboard = new Image(getClass().getResourceAsStream("blackboard.png"));
         whiteboard = new Image(getClass().getResourceAsStream("whiteboard.png"));
+        border = new Image(getClass().getResourceAsStream("border.png"));
+
         CheckersCanvas board = new CheckersCanvas();
         board.newgamebtn.setLayoutX(750);
         board.newgamebtn.setLayoutY(200);
         board.resignbtn.setLayoutX(750);
         board.resignbtn.setLayoutY(230);
         board.message.setLayoutX(200);
-        board.message.setLayoutY(500);
+        board.message.setLayoutY(550);
         scene = new Scene(root, 900, 600);
         root.getChildren().addAll(board.newgamebtn, board.resignbtn, board.message);
         primaryStage.setTitle("Checkers");
@@ -69,9 +72,13 @@ public class CheckersWidow extends Application {
         static CheckersMove[] legalMoves;
 
         public CheckersCanvas() {
+            newgamebtn.setOnMouseClicked(this);
+            resignbtn.setOnMouseClicked(this);
             board = new CheckersData();
             doNewGame();
-            canvas = new Canvas(600, 800);
+            canvas = new Canvas(600, 600);
+            canvas.setLayoutX(100);
+            canvas.setLayoutY(100);
             gc = canvas.getGraphicsContext2D();
             paint(gc);
             canvas.setOnMousePressed(this);
@@ -80,12 +87,19 @@ public class CheckersWidow extends Application {
 
         @Override
         public void handle(MouseEvent t) {
-            if (gameInProgress == false) {
+            Object src = t.getSource();
+            if (src == newgamebtn) {
+                doNewGame();
+                 repaintContext(gc);
+            } else if (src == resignbtn) {
+                doResign();
+            } else if (gameInProgress == false) {
                 message.setText("Click \"New Game\" to start a new game.");
             } else {
                 int col = (int) ((t.getX() - 2) / 50);
                 int row = (int) ((t.getY() - 2) / 50);
                 if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+                    System.out.println(row + " " + col);
                     doClickSquare(row, col);
                 }
             }
@@ -97,29 +111,27 @@ public class CheckersWidow extends Application {
         Draw черную границу двух пикселов по краям холста. */
 
  /* Нарисуйте квадраты шахматной доски и шашек. */
+            g.drawImage(border, 0, 0, 430, 430);
             for (int row = 0; row < 8; row++) {
                 for (int col = 0; col < 8; col++) {
                     if (row % 2 == col % 2) {
-                        g.drawImage(whiteboard, 2 + col * 50, 2 + row * 50, 50, 50);
-                        //g.setFill(Color.web("#8B4513"));
+                        g.drawImage(whiteboard, 16 + col * 50, 15 + row * 50, 50, 50);
                     } else {
-                        g.drawImage(blackboard, 2 + col * 50, 2 + row * 50, 50, 50);
-                       // g.setFill(Color.web("#FFA07A"));
+                        g.drawImage(blackboard, 16 + col * 50, 15 + row * 50, 50, 50);
                     }
-                   // g.fillRect(2 + col * 50, 2 + row * 50, 50, 50);
+
                     switch (board.pieceAt(row, col)) {
                         case CheckersData.RED:
-                            g.drawImage(white, 4 + col * 50, 4 + row * 50, 46, 46);
+                            g.drawImage(white, 18 + col * 50, 18 + row * 50, 46, 46);
                             break;
                         case CheckersData.BLACK:
-                            g.drawImage(black, 4 + col * 50, 4 + row * 50, 46, 46);
+                            g.drawImage(black, 18 + col * 50, 18 + row * 50, 46, 46);
                             break;
                         case CheckersData.RED_KING:
-                            g.drawImage(whiteking, 4 + col * 50, 4 + row * 50, 46, 46);
-                            //  g.drawImage(whiteking, 4 + col * 50, 4 + row * 50, 40, 40);
+                            g.drawImage(whiteking, 18 + col * 50, 17 + row * 50, 46, 46);
                             break;
                         case CheckersData.BLACK_KING:
-                            g.drawImage(blackking, 4 + col * 50, 4 + row * 50, 46, 46);
+                            g.drawImage(blackking, 18 + col * 50, 17 + row * 50, 46, 46);
                             break;
                     }
                 }
@@ -131,7 +143,7 @@ public class CheckersWidow extends Application {
                 // Во-первых, нарисуйте голубую рамку вокруг частей, которые могут быть перемещены.
                 g.setStroke(Color.CYAN);
                 for (int i = 0; i < legalMoves.length; i++) {
-                    g.strokeRect(2 + legalMoves[i].fromCol * 50, 2 + legalMoves[i].fromRow * 50, 49, 49);
+                    g.strokeRect(16 + legalMoves[i].fromCol * 50, 16 + legalMoves[i].fromRow * 50, 49, 49);
                     g.setFill(Color.RED);
                 }
                 /* Если выбран кусок для перемещения (т.е. если selectedRow> = 0), то
@@ -139,12 +151,12 @@ public class CheckersWidow extends Application {
               вокруг eacj площади, что эта часть может быть перемещен.*/
                 if (selectedRow >= 0) {
                     g.setStroke(Color.WHITE);
-                    g.strokeRect(2 + selectedCol * 50, 2 + selectedRow * 50, 50, 50);
-                    g.strokeRect(3 + selectedCol * 50, 3 + selectedRow * 50, 47, 47);
+                    g.strokeRect(16 + selectedCol * 50, 16 + selectedRow * 50, 50, 50);
+                    g.strokeRect(17 + selectedCol * 50, 17 + selectedRow * 50, 47, 47);
                     g.setStroke(Color.web("#DAA520"));
                     for (int i = 0; i < legalMoves.length; i++) {
                         if (legalMoves[i].fromCol == selectedCol && legalMoves[i].fromRow == selectedRow) {
-                            g.strokeOval(2 + legalMoves[i].toCol * 50, 2 + legalMoves[i].toRow * 50, 49, 49);
+                            g.strokeOval(16 + legalMoves[i].toCol * 50, 16 + legalMoves[i].toRow * 50, 49, 49);
 
                         }
                     }
@@ -164,8 +176,7 @@ public class CheckersWidow extends Application {
             message.setText("Red:  Make your move.");
             gameInProgress = true;
             newgamebtn.setDisable(true);
-            resignbtn.setDisable(false);
-            // repaintContext(gc);
+            resignbtn.setDisable(false);           
         }
 
         private void doResign() {
