@@ -1,5 +1,7 @@
 package checkers;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -24,12 +26,14 @@ public class Checkers extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Pane root = new Pane();
+        
+        Pane root = new Pane();       
+        
         Image image = new Image(getClass().getResourceAsStream("menu.jpg"));
         ImageView img = new ImageView(image);
         img.setFitWidth(900);
         img.setFitHeight(600);
-        Label label=new Label("V 0.1");
+        Label label = new Label("V 0.1");
         label.setLayoutX(50);
         label.setLayoutY(550);
         //root.getChildren().addAll(img,label);
@@ -50,35 +54,50 @@ public class Checkers extends Application {
 
             @Override
             public void handle(MouseEvent t) {
-            menuBox.setSubMenu(newGameMenu);
+                menuBox.setSubMenu(newGameMenu);
             }
         });
+        playersitem.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+               primaryStage.close();
+                Stage stage=new Stage();               
+                try {
+                    new CheckersWidow(stage);
+                } catch (Exception ex) {
+                    Logger.getLogger(Checkers.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-      //  newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
+            }
+        });
+        //  newGame.setOnMouseClicked(event -> menuBox.setSubMenu(newGameMenu));
         exitGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent t) {
-           System.exit(0);
+                System.exit(0);
             }
         });
-       // exitGame.setOnMouseClicked(event -> System.exit(0));
+        // exitGame.setOnMouseClicked(event -> System.exit(0));
         backitem.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent t) {
-          menuBox.setSubMenu(mainMenu);
+                menuBox.setSubMenu(mainMenu);
             }
         });
         //backitem.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
-        root.getChildren().addAll(img,menuBox,label);
-        Scene scene = new Scene(root, 900, 600);
-       /* FadeTransition ft = new FadeTransition(Duration.seconds(1), menuBox);
+        root.getChildren().addAll(img, menuBox, label);
+        Scene scene = new Scene(root);
+        /* FadeTransition ft = new FadeTransition(Duration.seconds(1), menuBox);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.play();*/
         menuBox.setVisible(true);
         primaryStage.setTitle("Checkers");
+        //primaryStage.setMaximized(true);
+       
+        
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -98,17 +117,16 @@ public class Checkers extends Application {
             getChildren().addAll(bg, text);
             final FillTransition st = new FillTransition(Duration.seconds(0.5), bg);
             setOnMouseEntered(new EventHandler<MouseEvent>() {
-
                 @Override
                 public void handle(MouseEvent t) {
-                st.setFromValue(Color.DARKGRAY);
-                st.setToValue(Color.DARKGOLDENROD);
-                st.setCycleCount(Animation.INDEFINITE);
-                st.setAutoReverse(true);
-                st.play();
+                    st.setFromValue(Color.DARKGRAY);
+                    st.setToValue(Color.DARKGOLDENROD);
+                    st.setCycleCount(Animation.INDEFINITE);
+                    st.setAutoReverse(true);
+                    st.play();
                 }
             });
-            
+
             /*setOnMouseEntered(event -> {
                 st.setFromValue(Color.DARKGRAY);
                 st.setToValue(Color.DARKGOLDENROD);
@@ -120,8 +138,8 @@ public class Checkers extends Application {
 
                 @Override
                 public void handle(MouseEvent t) {
-                 st.stop();
-                bg.setFill(Color.WHITE); 
+                    st.stop();
+                    bg.setFill(Color.WHITE);
                 }
             });
             /*setOnMouseExited(event -> {
@@ -139,9 +157,9 @@ public class Checkers extends Application {
             MenuBox.subMenu = subMenu;
 
             setVisible(false);
-           // Rectangle bg = new Rectangle(900, 600, Color.LIGHTBLUE);
-           // bg.setOpacity(0.4);
-            getChildren().addAll(/*bg,*/ subMenu);
+            // Rectangle bg = new Rectangle(900, 600, Color.LIGHTBLUE);
+            // bg.setOpacity(0.4);
+            getChildren().addAll(/*bg,*/subMenu);
         }
 
         public void setSubMenu(SubMenu subMenu) {
