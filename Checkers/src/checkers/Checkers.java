@@ -25,7 +25,7 @@ import javafx.util.Duration;
 public class Checkers extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         
         Pane root = new Pane();       
         
